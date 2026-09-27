@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicio 04 - Ordenar Números</title>
+</head>
+<body>
+
+    <h2>Ordenar 5 Números</h2>
+
+    <p>Ingresa 5 números enteros:</p>
+    <input type="number" id="n1" placeholder="Número 1"><br><br>
+    <input type="number" id="n2" placeholder="Número 2"><br><br>
+    <input type="number" id="n3" placeholder="Número 3"><br><br>
+    <input type="number" id="n4" placeholder="Número 4"><br><br>
+    <input type="number" id="n5" placeholder="Número 5"><br><br>
+
+    <button type="button" onclick="ordenar()">Ordenar Números</button>
+
+    <hr>
+    <h3>Resultado Ordenado:</h3>
+    <p id="resultado">-</p>
+
+    <script>
+        function ordenar() {
+            // Guardamos los valores en un arreglo convirtiéndolos a enteros
+            let lista = [
+                parseInt(document.getElementById("n1").value),
+                parseInt(document.getElementById("n2").value),
+                parseInt(document.getElementById("n3").value),
+                parseInt(document.getElementById("n4").value),
+                parseInt(document.getElementById("n5").value)
+            ];
+
+            // Validar que no haya campos vacíos
+            if (lista.some(isNaN)) {
+                alert("Por favor completa los 5 números.");
+                return;
+            }
+
+            // Ordenar de menor a mayor
+            lista.sort(function(a, b) {
+                return a - b;
+            });
+
+            // Mostrar el resultado separado por comas
+            document.getElementById("resultado").textContent = lista.join(" - ");
+        }
+    </script>
+
+</body>
+</html>

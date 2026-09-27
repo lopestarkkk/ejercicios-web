@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicio 05 - Mover Objeto</title>
+    <style>
+        /* Espacio de 600x600px */
+        #contenedor {
+            width: 600px;
+            height: 600px;
+            border: 2px solid black;
+            position: relative;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        /* El objeto a mover */
+        #objeto {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            top: 275px;
+            left: 275px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Control de Movimiento (600x600px)</h2>
+
+    <!-- Controles tipo cursor -->
+    <div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button type="button" onclick="mover('arriba')">⬆ Arriba</button><br>
+        <button type="button" onclick="mover('izquierda')">⬅ Izquierda</button>
+        <button type="button" onclick="mover('abajo')">⬇ Abajo</button>
+        <button type="button" onclick="mover('derecha')">➡ Derecha</button>
+    </div>
+
+    <!-- Espacio delimitado -->
+    <div id="contenedor">
+        <div id="objeto"></div>
+    </div>
+
+    <script>
+        // Posición inicial (centro aprox)
+        let posX = 275;
+        let posY = 275;
+        const paso = 25; // Cantidad de pixeles que avanza por clic
+        const obj = document.getElementById("objeto");
+
+        function mover(direccion) {
+            if (direccion === 'arriba' && posY > 0) {
+                posY -= paso;
+            } else if (direccion === 'abajo' && posY < 550) { // 600 - 50 del objeto
+                posY += paso;
+            } else if (direccion === 'izquierda' && posX > 0) {
+                posX -= paso;
+            } else if (direccion === 'derecha' && posX < 550) {
+                posX += paso;
+            }
+
+            // Aplicar las nuevas posiciones
+            obj.style.top = posY + "px";
+            obj.style.left = posX + "px";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicio 03 - Invertir Palabra</title>
+</head>
+<body>
+
+    <h2>Invertir Palabra</h2>
+
+    <label for="palabra">Palabra original:</label>
+    <input type="text" id="palabra" placeholder="SORPRENDEME"><br><br>
+
+    <button type="button" onclick="invertir()">Invertir</button><br><br>
+
+    <!-- Se muestra el resultado en otro campo de texto -->
+    <label for="resultado">Resultado invertido:</label>
+    <input type="text" id="resultado" readonly>
+
+    <script>
+        function invertir() {
+            let texto = document.getElementById("palabra").value;
+            // split separa las letras, reverse las invierte y join las une de nuevo
+            let textoInvertido = texto.split('').reverse().join('');
+            document.getElementById("resultado").value = textoInvertido;
+        }
+    </script>
+
+</body>
+</html>

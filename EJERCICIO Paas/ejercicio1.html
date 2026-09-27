@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ejercicio 01 - Operaciones</title>
+</head>
+<body>
+
+    <h2>Calculadora de Operaciones Básicas</h2>
+
+    <form onsubmit="return false;">
+        <label for="nro1">Nro 1:</label>
+        <input type="number" id="nro1" placeholder="Primer número"><br><br>
+
+        <label for="nro2">Nro 2:</label>
+        <input type="number" id="nro2" placeholder="Segundo número"><br><br>
+
+        <button type="button" onclick="calcular()">Calcular</button>
+    </form>
+
+    <hr>
+
+    <!-- Resultados mostrados en diferentes IDs -->
+    <p><strong>Suma:</strong> <span id="res-suma">-</span></p>
+    <p><strong>Resta:</strong> <span id="res-resta">-</span></p>
+    <p><strong>Multiplicación:</strong> <span id="res-multiplicacion">-</span></p>
+    <p><strong>División:</strong> <span id="res-division">-</span></p>
+
+    <script>
+        function calcular() {
+            // Obtener los valores de los inputs y convertirlos a número
+            let n1 = parseFloat(document.getElementById("nro1").value);
+            let n2 = parseFloat(document.getElementById("nro2").value);
+
+            // Validar que se hayan ingresado números
+            if (isNaN(n1) || isNaN(n2)) {
+                alert("Por favor, ingresa ambos números.");
+                return;
+            }
+
+            // Realizar las operaciones
+            let suma = n1 + n2;
+            let resta = n1 - n2;
+            let mult = n1 * n2;
+            let div = n2 !== 0 ? (n1 / n2) : "No se puede dividir entre 0";
+
+            // Mostrar resultados en sus respectivos IDs
+            document.getElementById("res-suma").textContent = suma;
+            document.getElementById("res-resta").textContent = resta;
+            document.getElementById("res-multiplicacion").textContent = mult;
+            document.getElementById("res-division").textContent = div;
+        }
+    </script>
+
+</body>
+</html>

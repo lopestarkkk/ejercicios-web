@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Juego de Memoria - Completo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f6f9;
+            margin-top: 20px;
+        }
+
+        /* Menú y controles */
+        .controles {
+            margin-bottom: 15px;
+        }
+
+        select, button {
+            padding: 8px 12px;
+            font-size: 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        /* Panel de información */
+        .info-panel {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Tablero de cartas (Grid) */
+        .tablero {
+            display: grid;
+            grid-template-columns: repeat(4, 90px);
+            grid-gap: 15px;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        /* Estilo de la carta */
+        .carta {
+            width: 90px;
+            height: 90px;
+            background-color: #ff9800; /* Fondo naranja */
+            color: white;
+            font-size: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            user-select: none;
+        }
+
+        /* Cuando la carta se voltea o acierta */
+        .carta.volteada, .carta.pareja {
+            background-color: #ffffff;
+            border: 2px solid #ff9800;
+            cursor: default;
+        }
+
+        #mensaje-final {
+            margin-top: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🎮 Juego de Memoria</h1>
+
+    <!-- 1. MENÚ (Selector de temática) -->
+    <div class="controles">
+        <label for="selector-tema"><strong>Temática:</strong></label>
+        <select id="selector-tema">
+            <option value="dragonball">Dragon Ball</option>
+            <option value="cartas">Cartas Clásicas</option>
+        </select>
+        <button id="btn-reiniciar">Reiniciar / Cambiar</button>
+    </div>
+
+    <!-- Panel de datos -->
+    <div class="info-panel">
+        <span>⏱ Tiempo: <span id="tiempo">0</span> s</span> | 
+        <span>🎯 Intentos: <span id="intentos">0</span></span>
+    </div>
+
+    <!-- Contenedor del tablero (DOM) -->
+    <div class="tablero" id="tablero"></div>
+
+    <div id="mensaje-final"></div>
+
+    <script>
+        // 2. ARRAYS Y OBJETOS (Base de datos de las cartas)
+        const coleccionCartas = [
+            // Temática Dragon Ball
+            { id: 1, categoria: "dragonball", icono: "🐉" },
+            { id: 2, categoria: "dragonball", icono: "⭐" },
+            { id: 3, categoria: "dragonball", icono: "🥋" },
+            { id: 4, categoria: "dragonball", icono: "💥" },
+            // Temática Cartas Clásicas
+            { id: 5, categoria: "cartas", icono: "♠️" },
+            { id: 6, categoria: "cartas", icono: "♥️" },
+            { id: 7, categoria: "cartas", icono: "♦️" },
+            { id: 8, categoria: "cartas", icono: "♣️" }
+        ];
+
+        let cartasBarajadas = [];
+        let cartasSeleccionadas = [];
+        let intentos = 0;
+        let aciertos = 0;
+        let tiempo = 0;
+        let temporizador = null;
+        let juegoIniciado = false;
+
+        function cargarJuego() {
+            // Reiniciar contadores y estado
+            clearInterval(temporizador);
+            tiempo = 0;
+            intentos = 0;
+            aciertos = 0;
+            juegoIniciado = false;
+            cartasSeleccionadas = [];
+
+            // 3. ACTUALIZACIÓN DEL DOM
+            document.getElementById("tiempo").textContent = 0;
+            document.getElementById("intentos").textContent = 0;
+            document.getElementById("mensaje-final").textContent = "";
+
+            // 4. USO DE FILTRO (.filter): filtra según el menú elegido
+            const categoriaElegida = document.getElementById("selector-tema").value;
+            const cartasFiltradas = coleccionCartas.filter(carta => carta.categoria === categoriaElegida);
+
+            // Duplicamos las cartas filtradas para crear las parejas
+            cartasBarajadas = [...cartasFiltradas, ...cartasFiltradas];
+            cartasBarajadas.sort(() => Math.random() - 0.5); // Barajar
+
+            // Renderizar cartas en el DOM
+            const tablero = document.getElementById("tablero");
+            tablero.innerHTML = "";
+
+            cartasBarajadas.forEach((cartaObj, index) => {
+                const elementoCarta = document.createElement("div");
+                elementoCarta.classList.add("carta");
+                elementoCarta.textContent = "❓";
+                elementoCarta.dataset.index = index;
+
+                // 5. EVENTOS DE JS (click en cada carta)
+                elementoCarta.addEventListener("click", () => voltear(elementoCarta, cartaObj));
+                tablero.appendChild(elementoCarta);
+            });
+        }
+
+        function voltear(elemento, objeto) {
+            // Iniciar tiempo con el primer clic
+            if (!juegoIniciado) {
+                juegoIniciado = true;
+                temporizador = setInterval(() => {
+                    tiempo++;
+                    document.getElementById("tiempo").textContent = tiempo;
+                }, 1000);
+            }
+
+            // Evitar clics inválidos
+            if (cartasSeleccionadas.length === 2 || elemento.classList.contains("volteada") || elemento.classList.contains("pareja")) {
+                return;
+            }
+
+            // Voltear carta
+            elemento.textContent = objeto.icono;
+            elemento.classList.add("volteada");
+            cartasSeleccionadas.push({ elemento, objeto });
+
+            // 6. LÓGICA DE COMPARACIÓN
+            if (cartasSeleccionadas.length === 2) {
+                intentos++;
+                document.getElementById("intentos").textContent = intentos;
+
+                const [c1, c2] = cartasSeleccionadas;
+
+                if (c1.objeto.id === c2.objeto.id) {
+                    // Si son iguales
+                    c1.elemento.classList.add("pareja");
+                    c2.elemento.classList.add("pareja");
+                    cartasSeleccionadas = [];
+                    aciertos++;
+
+                    // Fin del juego
+                    if (aciertos === 4) { // 4 parejas
+                        clearInterval(temporizador);
+                        document.getElementById("mensaje-final").textContent = 
+                            `🏆 ¡Felicidades! Terminaste en ${tiempo} segundos con ${intentos} intentos.`;
+                    }
+                } else {
+                    // Si no son iguales, voltearlas de nuevo
+                    setTimeout(() => {
+                        c1.elemento.textContent = "❓";
+                        c2.elemento.textContent = "❓";
+                        c1.elemento.classList.remove("volteada");
+                        c2.elemento.classList.remove("volteada");
+                        cartasSeleccionadas = [];
+                    }, 600);
+                }
+            }
+        }
+
+        // 7. EVENTOS DE JS para los botones y menú
+        document.getElementById("btn-reiniciar").addEventListener("click", cargarJuego);
+        document.getElementById("selector-tema").addEventListener("change", cargarJuego);
+
+        // Inicializar al cargar la página
+        cargarJuego();
+    </script>
+
+</body>
+</html>
